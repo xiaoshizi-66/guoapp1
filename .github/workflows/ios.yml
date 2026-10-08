@@ -67,8 +67,13 @@ jobs:
         run: |
           set -euo pipefail
           ls -lh dist/ios/
-          test -n "$(find dist/ios -name '*-ios-unsigned.ipa')" || {
+          ipa=$(find dist/ios -name '*-ios-unsigned.ipa' | head -n1)
+          test -n "$ipa" || {
             echo "未生成未签名 IPA" >&2
+            exit 1
+          }
+          unzip -l "$ipa" | grep -q 'Payload/' || {
+            echo "IPA 缺少 Payload 目录，无法安装：$ipa" >&2
             exit 1
           }
           cat dist/ios/SHA256SUMS.txt
