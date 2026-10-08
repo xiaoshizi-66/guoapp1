@@ -54,6 +54,12 @@ jobs:
           go version
           flutter --version
 
+      - name: 解析依赖
+        run: |
+          set -euo pipefail
+          flutter pub get
+          git --no-pager diff --stat -- pubspec.lock || true
+
       - name: 构建 iOS 包
         run: python3 scripts/build_ios.py ${{ matrix.arguments }}
 
